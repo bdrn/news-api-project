@@ -1,0 +1,31 @@
+.App {
+  text-align: center;
+}
+
+.articles {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.article {
+  width: 60%;
+  padding: 20px;
+  margin: 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.article h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.article p {
+  font-size: 16px;
+}
+
+.article a {
+  color: blue;
+  text-decoration: none;
+}
