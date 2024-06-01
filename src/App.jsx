@@ -10,19 +10,25 @@ function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState('');
   const [category, setCategory] = useState('');
+  const [page, setPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const fetchNews = (searchQuery = '', selectedCategory = '') => {
+  const fetchNews = (searchQuery = '', selectedCategory = '', pageNumber = 1) => {
     let URL = BASE_URL;
+
+
     if (searchQuery) {
-      URL = `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${API_KEY}`;
-    }
-    if (selectedCategory) {
-      URL = `${BASE_URL}&category=${selectedCategory}`;
+      URL = `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${API_KEY}&page=${pageNumber}`;
+    } else if (selectedCategory) {
+      URL = `${BASE_URL}&category=${selectedCategory}&page=${pageNumber}`;
+    } else {
+      URL = `${BASE_URL}&page=${pageNumber}`;
     }
 
     axios.get(URL)
       .then(response => {
         setArticles(response.data.articles);
+        setTotalPages(Math.ceil(response.data.totalResults / 20));
       })
       .catch(error => {
         console.error("Error fetching news", error);
@@ -30,12 +36,25 @@ function App() {
   };
 
   useEffect(() => {
-    fetchNews();
-  }, []);
+    fetchNews(query, category, page);
+  }, [query, category, page]);
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchNews(query, category);
+    setPage(1);
+    fetchNews(query, category, 1);
+  };
+
+  const handleNextPage = () => {
+    if (page < totalPages) {
+      setPage(prevPage => prevPage + 1);
+    }
+  };
+
+  const handlePreviousPage = () => {
+    if (page > 1) {
+      setPage(prevPage => prevPage - 1);
+    }
   };
 
   return (
@@ -68,6 +87,11 @@ function App() {
             <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
           </div>
         ))}
+      </div>
+      <div className="pagination">
+        <button onClick={handlePreviousPage} disabled={page === 1}>Previous</button>
+        <span>Page {page} of {totalPages}</span>
+        <button onClick={handleNextPage} disabled={page === totalPages}>Next</button>
       </div>
     </div>
   );
