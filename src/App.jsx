@@ -3,7 +3,7 @@ import axios from 'axios';
 import moment from 'moment';
 import './App.css';
 
-const API_KEY = '80f9fb1022f949fcb6b0a4a152b00631';
+const API_KEY = import.meta.env.VITE_NEWS_API_KEY;
 const URL = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_KEY}`;
 
 function App() {
