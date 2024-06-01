@@ -9,11 +9,16 @@ const BASE_URL = `https://newsapi.org/v2/top-headlines?country=us&apiKey=${API_K
 function App() {
   const [articles, setArticles] = useState([]);
   const [query, setQuery] = useState('');
+  const [category, setCategory] = useState('');
 
-  const fetchNews = (searchQuery = '') => {
-    const URL = searchQuery
-      ? `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${API_KEY}`
-      : BASE_URL;
+  const fetchNews = (searchQuery = '', selectedCategory = '') => {
+    let URL = BASE_URL;
+    if (searchQuery) {
+      URL = `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${API_KEY}`;
+    }
+    if (selectedCategory) {
+      URL = `${BASE_URL}&category=${selectedCategory}`;
+    }
 
     axios.get(URL)
       .then(response => {
@@ -30,7 +35,7 @@ function App() {
 
   const handleSearch = (e) => {
     e.preventDefault();
-    fetchNews(query);
+    fetchNews(query, category);
   };
 
   return (
@@ -43,6 +48,15 @@ function App() {
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search for news..."
         />
+        <select onChange={(e) => setCategory(e.target.value)} value={category}>
+          <option value="">All</option>
+          <option value="business">Business</option>
+          <option value="entertainment">Entertainment</option>
+          <option value="health">Health</option>
+          <option value="science">Science</option>
+          <option value="sports">Sports</option>
+          <option value="technology">Technology</option>
+        </select>
         <button type="submit">Search</button>
       </form>
       <div className="articles">
