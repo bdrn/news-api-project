@@ -12,10 +12,10 @@ function App() {
   const [category, setCategory] = useState('');
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [error, setError] = useState(null);
 
   const fetchNews = (searchQuery = '', selectedCategory = '', pageNumber = 1) => {
     let URL = BASE_URL;
-
 
     if (searchQuery) {
       URL = `https://newsapi.org/v2/everything?q=${searchQuery}&apiKey=${API_KEY}&page=${pageNumber}`;
@@ -29,9 +29,12 @@ function App() {
       .then(response => {
         setArticles(response.data.articles);
         setTotalPages(Math.ceil(response.data.totalResults / 20));
+        setError(null);
       })
       .catch(error => {
         console.error("Error fetching news", error);
+        setError(error);
+        setArticles([]);
       });
   };
 
@@ -55,6 +58,7 @@ function App() {
   const handlePreviousPage = () => {
     if (page > 1) {
       setPage(prevPage => prevPage - 1);
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
 
@@ -79,15 +83,19 @@ function App() {
         </select>
         <button type="submit">Search</button>
       </form>
+      {error && <div className="error-message">Error fetching news: {error.message}</div>}
       <div className="articles">
-        {articles.map((article, index) => (
-          <div key={index} className="article">
-            <h2>{article.title}</h2>
-            <p>{article.description}</p>
-            <p><small>{moment(article.publishedAt).format('LLLL')}</small></p>
-            <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
-          </div>
-        ))}
+        {articles
+          .filter(article => article.title && article.url && !article.url.includes("removed.com"))
+          .map((article, index) => (
+            <div key={index} className="article">
+              <h2>{article.title}</h2>
+              {article.urlToImage && <img src={article.urlToImage} alt={article.title} />}
+              <p>{article.description}</p>
+              <p><small>{moment(article.publishedAt).format('LLLL')}</small></p>
+              <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
+            </div>
+          ))}
       </div>
       <div className="pagination">
         <button onClick={handlePreviousPage} disabled={page === 1}>Previous</button>
