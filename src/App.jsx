@@ -82,6 +82,7 @@ function App() {
         {articles.map((article, index) => (
           <div key={index} className="article">
             <h2>{article.title}</h2>
+            {article.urlToImage && <img src={article.urlToImage} alt={article.title} />}
             <p>{article.description}</p>
             <p><small>{moment(article.publishedAt).format('LLLL')}</small></p>
             <a href={article.url} target="_blank" rel="noopener noreferrer">Read more</a>
